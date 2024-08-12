@@ -1,0 +1,93 @@
+:root {
+  --cyan: hsl(180, 66%, 49%);
+  --dark-violet: hsl(257, 27%, 26%);
+  --red: hsl(0, 87%, 67%);
+  --gray: hsl(0, 0%, 75%);
+  --grayish-violet: hsl(257, 7%, 63%);
+  --very-dark-blue: hsl(255, 11%, 22%);
+  --very-dark-violet: hsl(260, 8%, 14%);
+}
+/* bg-gradient-to-b from-white from-40% to-[#e6e6e6] to-90% */
+@media screen and (min-width: 1400px) {
+  html {
+    background: linear-gradient(white 40%, hsl(0, 0%, 90%) 40%);
+  }
+  .line {
+    margin-top: 110px;
+  }
+
+  footer div ol {
+    margin-bottom: 16px;
+  }
+}
+@media screen and (min-width: 375px) and (max-width: 1400px) {
+  html {
+    background: linear-gradient(hsl(0, 0%, 100%) 26%, hsl(0, 0%, 90%) 26%);
+  }
+  footer div ol {
+    margin: 20px 0;
+  }
+  footer div li {
+    margin: auto;
+  }
+}
+
+html {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 18px;
+}
+
+body button:not(.not-this, .nav) {
+  background-color: var(--cyan);
+  color: white;
+}
+
+body button:not(.not-this, .nav):hover {
+  background-color: hsla(180, 66%, 49%, 0.5);
+}
+
+section p {
+  color: var(--grayish-violet);
+}
+
+.line {
+  background-color: var(--cyan);
+}
+
+.background {
+  background-color: var(--dark-violet);
+}
+
+.cards img:not(.social img) {
+  background-color: var(--dark-violet);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+footer {
+  background-color: var(--very-dark-violet);
+}
+
+footer div li {
+  color: var(--grayish-violet);
+  width: fit-content;
+}
+
+footer div li:hover {
+  color: var(--cyan);
+  cursor: pointer;
+}
+
+footer div ol {
+  font-weight: bold;
+}
+
+.sidebar {
+  background-color: var(--dark-violet);
+  color: white;
+  font-weight: bold;
+}
