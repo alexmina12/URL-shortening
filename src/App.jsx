@@ -9,10 +9,48 @@ import Twitter from "./assets/icon-twitter.svg";
 import Pinterest from "./assets/icon-pinterest.svg";
 import Instagram from "./assets/icon-instagram.svg";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 function App() {
   const [on, setOn] = useState(false);
+  const [url, setUrl] = useState("");
+  const [copied, setCopied] = useState(null);
+  const [shortUrl, setShortUrl] = useState("");
+  const [shortUrls, setShortUrls] = useState([]);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  const shortenUrl = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/shorten", {
+        url: url,
+      });
+      // console.log(response.data.shortUrl);
+      const newShortUrl = response.data.shortUrl;
+      setShortUrls((prevShortUrls) => [
+        ...prevShortUrls,
+        { original: url, short: newShortUrl },
+      ]);
+      setShortUrl(response.data.shortUrl);
+      setUrl("");
+    } catch (error) {
+      console.error("Error shortening URL:", error);
+    }
+  };
+
+  const handleCopy = (index, shortUrl) => {
+    navigator.clipboard.writeText(shortUrl);
+    setCopied(index);
+  };
+
+  const handleKey = (e) => {
+    if (e.key === "Enter") {
+      handleShortenUrl();
+    }
+  };
+
+  const handleShortenUrl = () => {
+    shortenUrl(url);
+  };
 
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
@@ -34,7 +72,7 @@ function App() {
       {windowWidth > 1400 ? (
         <div className="flex flex-col">
           <div className="mx-36">
-            <nav className="grid grid-cols-2 mt-10 sm:flex">
+            <nav className="grid grid-cols-2 mt-10">
               <div className="flex gap-4">
                 <img src={Logo} alt=""></img>
                 <a href="" className="my-auto">
@@ -56,7 +94,7 @@ function App() {
             </nav>
             <section className="grid grid-cols-2 justify-center my-16 h-[80vh] link">
               <div className="flex flex-col my-auto">
-                <h1 className="font-bold text-7xl w-[700px]">
+                <h1 className="font-bold text-7xl w-[700px] title">
                   More than just shorter links
                 </h1>
                 <p className="w-[400px] mt-4">
@@ -75,16 +113,53 @@ function App() {
                 />
               </div>
             </section>
-            <section className="flex bg-[url('./assets/bg-boost-desktop.svg')] bg-auto bg-no-repeat bg-center w-full mx-auto p-10 background rounded-xl z-50 ">
+            <section className="flex bg-[url('./assets/bg-boost-desktop.svg')] bg-auto bg-no-repeat bg-center w-full mx-auto p-10 background rounded-xl z-50 flex-wrap">
               <input
-                className="w-full rounded-sm mr-4 placeholder:pl-4"
+                className="w-[85%] rounded-sm mr-4 placeholder:pl-4"
                 type="text"
                 placeholder="Shorten a link here..."
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
               />
-              <button className="rounded-lg w-32 text-center my-auto py-2">
+              <button
+                className="rounded-lg w-32 text-center my-auto py-2"
+                onClick={handleShortenUrl}
+              >
                 Shorten It!
               </button>
+              {url === "" && <p className="text-red-600">Please add a link</p>}
             </section>
+            {shortUrls.map((item, index) => (
+              <div key={index} className="flex bg-white mx-4 my-4 p-2 shorter">
+                <a
+                  className="overflow-ellipsis overflow-hidden whitespace-nowrap my-auto w-[50%]"
+                  href={item.original}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.original}
+                </a>
+                <hr className="my-2" />
+                <a
+                  className="link my-auto mr-0 ml-[20%]"
+                  href={item.short}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.short}
+                </a>
+                <button
+                  className={`rounded-lg w-[150px] py-2 my-auto mr-0 not-this ${
+                    copied === index
+                      ? "bg-darkViolet text-white"
+                      : "bg-cyan-500"
+                  }`}
+                  onClick={() => handleCopy(index, item.short)}
+                >
+                  {copied === index ? "Copied!" : "Copy!"}
+                </button>
+              </div>
+            ))}
             <section className="my-10 cards h-[90vh]">
               <div className="text-center">
                 <h2 className="text-3xl font-bold">Advanced Statistics</h2>
@@ -227,16 +302,54 @@ function App() {
               </button>
             </div>
           </section>
-          <section className="flex flex-col bg-[url('./assets/bg-boost-desktop.svg')] bg-auto bg-no-repeat bg-center p-6 mx-4 background rounded-xl">
+          <section className="background flex flex-col bg-[url('./assets/bg-boost-desktop.svg')] bg-auto bg-no-repeat bg-center p-6 mx-4 rounded-xl">
             <input
               className="w-full h-10 rounded-sm placeholder:pl-4"
               type="text"
               placeholder="Shorten a link here..."
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={handleKey}
             />
-            <button className="rounded-lg w-full text-center mt-4 py-2 ">
+            <button
+              className="rounded-lg w-full text-center mt-4 py-2"
+              onClick={handleShortenUrl}
+            >
               Shorten It!
             </button>
           </section>
+          {shortUrls.map((item, index) => (
+            <div
+              key={index}
+              className="flex flex-col bg-white mx-4 my-4 py-2 shorter"
+            >
+              <a
+                className="overflow-ellipsis overflow-hidden whitespace-nowrap"
+                href={item.original}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {item.original}
+              </a>
+              <hr className="my-2" />
+              <a
+                className="link"
+                href={item.short}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {item.short}
+              </a>
+              <button
+                className={`rounded-3xl mx-auto w-40 py-2 mt-2 not-this ${
+                  copied === index ? "bg-darkViolet text-white" : "bg-cyan-500"
+                }`}
+                onClick={() => handleCopy(index, item.short)}
+              >
+                {copied === index ? "Copied!" : "Copy!"}
+              </button>
+            </div>
+          ))}
           <section className="mt-10 cards">
             <div className="text-center">
               <h2 className="text-3xl font-bold">Advanced Statistics</h2>

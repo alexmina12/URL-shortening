@@ -5,7 +5,11 @@ export default {
     screens: {
       sm: { min: "375px", max: "1400px" },
     },
-    extend: {},
+    extend: {
+      colors: {
+        darkViolet: "hsl(257, 27%, 26%)",
+      },
+    },
   },
   plugins: [],
 };
